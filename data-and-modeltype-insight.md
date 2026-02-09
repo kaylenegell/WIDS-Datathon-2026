@@ -93,10 +93,117 @@ All features based on the first 5 hours of fire behavior (t0 to t0+5h):
    - competing risks (ex: will the fire be contained before hitting the evacuation zone)
 
 ### Math behind the concept
-1. Survival Function: S(t)
-2. Hazard Function: h(t)
+1. Survival Function: S(t) Probability of surviving beyond time t
+- S(t) = P(T > t) = P(fire hasn't hit by time t)
+- Properties:
+   - S(0) = 1 (all fires start as "not hit")
+   - S(infinity) = 0 (eventually all would hit, if given infinite time)
+   - Monotonically decreasing (can't turn "un-hit")
+   - For censored data: S(72) > 0 (some never observed hitting)
+- Interpretation for this problem:
+   - S(6) = 0.85 -> 85% of fires haven't hit evacuation zone by 6 hours
+
+2. Hazard Function: h(t) Instantenous rate of event occurence at time t, given survival to t
+- h(t) = lim[Δt→0] P(t ≤ T < t+Δt | T ≥ t) / Δt
+- Interpretation:
+   - h(6) = 0.05 -> 5% per hour risk of hitting at hour 6
+   - high hazard = high immediate risk
+   - can increase, decrease, or stay constant over time
+- cumulative hazard:
+   - H(t) = ∫[0 to t] h(u)du = -log(S(t))
 3. Relationship between S(t) and h(t)
+- S(t) = exp(-H(t)) = exp(-∫[0 to t] h(u)du)
+- If hazard is constant (h(t) = λ): exponential survival: S(t) = exp(-λt)
+- If hazard increases over time: weibull distribution (accelerating risk)
 
-### Which survival models would best suit this data?
+## Which survival models would best suit this data?
 
-### How to evaluate performance of survival models?
+### 1. Cox Proportional Hazards Model (Recommended Starting Point)
+When to use:
+- understanding feature effects
+- semi-parametric approach (no distributional assumptions)
+- works well with censored data
+
+**Model**
+```
+h(t|X) = h₀(t) × exp(β₁X₁ + β₂X₂ + ... + βₚXₚ)
+```
+
+Where:
+- h₀(t) = baseline hazard (unspecified)
+- X = features (distance, direction, etc.)
+- β = coefficients (log hazard ratios)
+
+**Interpretation:**
+- β > 0: Feature increases hazard (shorter time to hit)
+- β < 0: Feature decreases hazard (longer time to hit)
+- exp(β) = hazard ratio
+
+**Assumptions**
+- Proportional hazards: effect of features is constant over time
+- check with schoendeld residuals
+
+### 2. Accelerated Failure Time (AFT) Models
+When to use:
+- need to specify time distribution
+- want to model median survival time directly
+- linear relationships with log(time)
+
+**Available Distributions**
+- weibull (most flexible - models increasing/decreasing hazard) 
+- log-logistic (allows non-monotonic hazard)
+- log-normal (symmetric on log scale)
+- exponential (constant hazard - simplest)
+
+### 3. Random Survival Forests (advanced)
+When to use:
+- non-linear relationships
+- feature interactions important
+- no distributional assumptions needed
+- can handle complex patterns
+
+### 4. Gradient Boosting Survival Models
+
+### 5. Deep Learning Survival Models
+
+
+## How to evaluate performance of survival models?
+
+### 1. Concordance Index (C-Index): PRIMARY METRIC
+Probability that model correctly ranks pairs of observations
+
+Interpretation:
+- C = 0.5 random predictions (coin toss)
+- C = 1.0 perfect predictions
+- C > 0.7 good model
+- C > 0.8 excellent model
+
+Calculation: 
+For all comparable pairs (i, j) where tᵢ < tⱼ:
+- Concordant: risk_scoreᵢ > risk_scoreⱼ (higher risk = shorter survival)
+- Discordant: risk_scoreᵢ < risk_scoreⱼ
+- C-index = concordant / (concordant + discordant)
+
+### 2. Integrated Brier Score (IBS)
+Mean squared error of survival probability predictions over time. Lower is better (similar to MSE)
+
+### 3. Time-Dependent AUC
+AUC at specific time points
+
+
+## Possible approach
+
+### 1. Baseline
+1. Kaplan-Meier analysis for overall survival pattern
+2. Cox model with top 9 features
+3. Establish C-index baseline
+
+### 2. Optimization 
+4. Try AFT models (weibull, log-normal)
+5. Random Survival Forest
+6. Feature Engineering (distance ratios, interactions)
+
+### 3. Advanced
+7. Ensemble multiple survival models
+8. Deep survival learning (python: DeepSurv)
+9. Custom loss functions optimized for C-index
