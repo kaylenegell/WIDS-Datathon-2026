@@ -1,11 +1,5 @@
 # data-insights
 
-
-## data-insights.md
-
-```markdown
-# Data Insights
-
 ## Dataset Overview
 
 ### Training Data Statistics
