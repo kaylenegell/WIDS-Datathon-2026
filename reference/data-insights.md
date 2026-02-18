@@ -186,3 +186,10 @@
 4. **Feature redundancy**: Several exact duplicates to remove
 5. **Censoring critical**: Must use survival methods
 6. **Small sample**: Feature engineering > model complexity
+
+---
+
+## Train vs Test profiles
+
+Test-specific difference: dist_accel_m_per_h2 shows higher correlation with growth features in test data (16 correlations) vs training (3-4 correlations)
+
