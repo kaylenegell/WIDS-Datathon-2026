@@ -58,7 +58,7 @@ The train-test comparison also showed us that the distributions are generally si
 "**Temporal Coverage** - these are data quality indicators:
 - `num_perimeters_0_5h`: How many times the fire was observed (1-17 times)
 - `dt_first_last_0_5h`: Time span of observations (0-5 hours)  
-- `low_temporal_resolution_0_5h`: A flag indicating poor data quality
+- `low_temporal_resolution_0_5h`: A flag indicating poor data quality -> 1 if dt < 0.5h or only 1 perimeter, else 0
 
 Remember that 72% statistic? Most fires have `num_perimeters` equal to 1, which severely limits what we can calculate."
 
