@@ -37,7 +37,7 @@ These reports are available in the repository as `train_data_profile.html`, `tes
 
 **Second**, we discovered that **72% of fires have only a single perimeter observation**. This is huge - it means most of our growth and movement features are zero because you can't calculate rates of change from a single point.
 
-**Third**, the profiling revealed **perfect separation at 5 kilometers** - ALL fires that hit evacuation zones were within 5km at the start, while ALL censored fires were beyond 5km. This makes distance features absolutely critical.
+**Third**, the profiling revealed something interesting about distance: in our training data, there's a strong pattern where fires closer than 5km are much more likely to hit evacuation zones. However, we need to be cautious - this perfect separation in training data is likely an artifact of data construction and probably won't hold in the test set. Still, it confirms that distance features will be highly predictive.
 
 The train-test comparison also showed us that the distributions are generally similar, which is good news for model generalization."
 
@@ -94,7 +94,7 @@ Here's a **critical insight**: the fire centroid can move AWAY from evacuation z
 - Acceleration in distance change
 - How predictable the distance trend is
 
-Remember that perfect separation? **ALL hits are ≤5km, ALL censored fires are >5km**. This makes distance features the strongest predictors in our dataset."
+In our training data, we see a very strong distance pattern - fires closer than 5km are much more likely to hit zones. While this pattern may not be as clean in the test set, it confirms that distance features will be among our strongest predictors."
 
 ### Category 5: Directionality Features (1 minute)
 
@@ -259,7 +259,7 @@ Now I'll hand it over to [colleague's name] who will dive deeper into the featur
 - 221 training samples (69 hits, 152 censored)
 - 34 features in 6 categories
 - 72% have only 1 perimeter observation
-- 5km perfect separation threshold
+- Strong distance pattern in training data (but may not generalize perfectly)
 - 30% C-index, 70% Brier Score weights
 - 48h horizon gets 40% of Brier weight
 - 12,834 comparable pairs for C-index
